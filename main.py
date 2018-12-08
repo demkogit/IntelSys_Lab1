@@ -1,11 +1,23 @@
 from PIL import Image
 
-image = Image.open("f1.bmp")
+image = Image.open("imgs/f7.bmp")
 width = image.size[0]
 height = image.size[1]
 pix = image.load()
+for h in range(height):
+    for w in range(width):
+        if (pix[w, h] == 0):
+            pix[w, h] = 1
+        else:
+            pix[w, h] = 0
 
 arrs = [
+
+    [[0, 0, 0, 0],
+     [0, 0, 1, 0],
+     [0, 1, 0, 1],
+     [0, 1, 0, 1]],
+
     [[0, 1, 0, 0],
      [0, 1, 0, 0],
      [0, 1, 1, 1],
@@ -36,32 +48,15 @@ arrs = [
      [0, 1, 1, 0],
      [0, 1, 0, 1]],
 
+    [[0, 0, 1, 0],
+     [0, 1, 0, 0],
+     [0, 1, 1, 1],
+     [0, 0, 0, 0]]
+
 ]
 
 
 # Up = 0; Right = 1; Down = 2; Left = 3;
-def leftRotation(dir):
-    if (dir == 0):
-        return [0, -1, 3]
-    if (dir == 1):
-        return [-1, 0, 0]
-    if (dir == 2):
-        return [0, 1, 1]
-    if (dir == 3):
-        return [1, 0, 2]
-
-
-def rightRotation(dir):
-    if (dir == 0):
-        return [0, 1, 1]
-    if (dir == 1):
-        return [1, 0, 2]
-    if (dir == 2):
-        return [0, -1, 3]
-    if (dir == 3):
-        return [-1, 0, 0]
-
-
 def IsClosed(img):
     firstPix = False
     oldX = 0
@@ -83,7 +78,7 @@ def IsClosed(img):
     res = False
     while (True):
         i += 1
-        #print("[ %s, %s ]  dir:%s" % (x, y, dir))
+        # print("[ %s, %s ]  dir:%s" % (x, y, dir))
         if (dir == 0):
             if (img[y + 1, x] == 1):
                 if (img[y, x - 1] == 1):
@@ -160,27 +155,23 @@ def main():
     i = 0
     j = 0
 
-    for l in range(height - 2):
-        for k in range(width - 2):
+    for l in range(height - 3):
+        for k in range(width - 3):
             for c in range(len(arrs)):
-                while (True):
-                    if (j == 3):
-                        j = 0
-                        i += 1
-                    if (i == 3):
-                        i = 0
-                        j = 0
+                for i in range(4):
+                    if(flags[c]):
+                        for j in range(4):
+                            if (pix[j + k, i + l] != arrs[c][i][j]):
+                                flags[c] = False
+                                break
+                    else:
                         break
-                    if (pix[j + k, i + l] != arrs[c][i][j]):
-                        flags[c] = False
-                        j = 0
-                        i = 0
-                        break
-                    j += 1
+
 
             for p in range(len(flags)):
                 if (flags[p]):
                     counts[p] += 1
+                    print('flag[%s]  [ %s, %s ]' % (p, k, l))
                 flags[p] = True
 
     for i in range(len(counts)):
