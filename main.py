@@ -10,19 +10,19 @@ for h in range(height):
             pix[w, h] = 1
         else:
             pix[w, h] = 0
-
+image.close()
 arrs = []
 
 def InitArrs():
     arr = []
     with open("patterns4x4_2.txt") as f:
         for line in f:
-            if(line == '\n'):
+            if (line == '\n'):
                 arrs.append(arr)
                 arr = []
             else:
                 arr.append([int(x) for x in line.split()])
-    print('init')
+    print('init patterns')
 
 
 # Up = 0; Right = 1; Down = 2; Left = 3;
@@ -138,14 +138,14 @@ def main():
             for p in range(len(flags)):
                 if (flags[p]):
                     counts[p] += 1
-                    #print('flag[%s]  [ %s, %s ]' % (p, k, l))
+                    # print('flag[%s]  [ %s, %s ]' % (p, k, l))
                 flags[p] = True
 
     sum = 0
     str1 = ''
     for i in range(len(counts)):
         print(counts[i])
-        if(counts[i] > 0):
+        if (counts[i] > 0):
             for e in range(4):
                 for ee in range(4):
                     str1 += str(arrs[i][e][ee]) + ' '
@@ -155,20 +155,19 @@ def main():
 
     isClosed = IsClosed(pix)
 
-    print('Количество углов: %s' %sum)
-    if(isClosed):
+    print('Количество углов: %s' % sum)
+    if (isClosed):
         print('Контур замкнутый...')
     else:
         print('Контур не замкнутый!')
 
     if (isClosed):
         if (sum == 4):
-            if (counts[0] == 1 and counts[1] == 1 and counts[2] == 1 and counts[3] == 1):
-                print('Это прямоугольник?')
-            else:
-                print('Это четырехугольник?')
-        elif(sum == 3):
+            print('Это прямоугольник?')
+        elif (sum == 3):
             print('Это треугольник?')
+        else:
+            print('Я не знаю что это за фигура(')
 
 
 if __name__ == "__main__":
