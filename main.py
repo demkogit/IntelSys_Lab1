@@ -1,6 +1,6 @@
 from PIL import Image
 
-image = Image.open("imgs/f7.bmp")
+image = Image.open("imgs/f11.bmp")
 width = image.size[0]
 height = image.size[1]
 pix = image.load()
@@ -11,49 +11,18 @@ for h in range(height):
         else:
             pix[w, h] = 0
 
-arrs = [
+arrs = []
 
-    [[0, 0, 0, 0],
-     [0, 0, 1, 0],
-     [0, 1, 0, 1],
-     [0, 1, 0, 1]],
-
-    [[0, 1, 0, 0],
-     [0, 1, 0, 0],
-     [0, 1, 1, 1],
-     [0, 0, 0, 0]],
-
-    [[0, 0, 1, 0],
-     [0, 0, 1, 0],
-     [1, 1, 1, 0],
-     [0, 0, 0, 0]],
-
-    [[0, 0, 0, 0],
-     [1, 1, 1, 0],
-     [0, 0, 1, 0],
-     [0, 0, 1, 0]],
-
-    [[0, 0, 0, 0],
-     [0, 1, 1, 1],
-     [0, 1, 0, 0],
-     [0, 1, 0, 0]],
-
-    [[1, 0, 0, 0],
-     [0, 1, 0, 0],
-     [1, 1, 1, 0],
-     [0, 0, 0, 0]],
-
-    [[0, 0, 0, 0],
-     [0, 1, 0, 0],
-     [0, 1, 1, 0],
-     [0, 1, 0, 1]],
-
-    [[0, 0, 1, 0],
-     [0, 1, 0, 0],
-     [0, 1, 1, 1],
-     [0, 0, 0, 0]]
-
-]
+def InitArrs():
+    arr = []
+    with open("patterns4x4_2.txt") as f:
+        for line in f:
+            if(line == '\n'):
+                arrs.append(arr)
+                arr = []
+            else:
+                arr.append([int(x) for x in line.split()])
+    print('init')
 
 
 # Up = 0; Right = 1; Down = 2; Left = 3;
@@ -77,8 +46,7 @@ def IsClosed(img):
     dir = 0
     res = False
     while (True):
-        i += 1
-        # print("[ %s, %s ]  dir:%s" % (x, y, dir))
+
         if (dir == 0):
             if (img[y + 1, x] == 1):
                 if (img[y, x - 1] == 1):
@@ -143,8 +111,10 @@ def IsClosed(img):
         if (x == oldX and y == oldY - 1):
             res = True
             break
-        if (i > 100000):
+        if (img[y, x] == 2):
             break
+        img[y, x] = 2
+        # print('[ %s, %s ]  %s' % (x, y, i))
 
     return res
 
@@ -152,14 +122,12 @@ def IsClosed(img):
 def main():
     counts = [0] * len(arrs)
     flags = [True] * len(arrs)
-    i = 0
-    j = 0
 
     for l in range(height - 3):
         for k in range(width - 3):
             for c in range(len(arrs)):
                 for i in range(4):
-                    if(flags[c]):
+                    if (flags[c]):
                         for j in range(4):
                             if (pix[j + k, i + l] != arrs[c][i][j]):
                                 flags[c] = False
@@ -167,18 +135,42 @@ def main():
                     else:
                         break
 
-
             for p in range(len(flags)):
                 if (flags[p]):
                     counts[p] += 1
-                    print('flag[%s]  [ %s, %s ]' % (p, k, l))
+                    #print('flag[%s]  [ %s, %s ]' % (p, k, l))
                 flags[p] = True
 
+    sum = 0
+    str1 = ''
     for i in range(len(counts)):
         print(counts[i])
+        if(counts[i] > 0):
+            for e in range(4):
+                for ee in range(4):
+                    str1 += str(arrs[i][e][ee]) + ' '
+                print(str1)
+                str1 = ''
+        sum += counts[i]
 
-    print('Фигура замкнута?: %s' % IsClosed(pix))
+    isClosed = IsClosed(pix)
+
+    print('Количество углов: %s' %sum)
+    if(isClosed):
+        print('Контур замкнутый...')
+    else:
+        print('Контур не замкнутый!')
+
+    if (isClosed):
+        if (sum == 4):
+            if (counts[0] == 1 and counts[1] == 1 and counts[2] == 1 and counts[3] == 1):
+                print('Это прямоугольник?')
+            else:
+                print('Это четырехугольник?')
+        elif(sum == 3):
+            print('Это треугольник?')
 
 
 if __name__ == "__main__":
+    InitArrs()
     main()
